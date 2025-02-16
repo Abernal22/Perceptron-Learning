@@ -77,7 +77,7 @@ if __name__ == "__main__":
   y = iris.target[:100]
 
   # Convert labels to (-1,1)
-  y = np.where(y == 0, -1, 1)
+  #y = np.where(y == 0, -1, 1)
 
   # Define parameters
   eta = 0.01
