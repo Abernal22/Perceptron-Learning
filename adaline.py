@@ -10,7 +10,7 @@ class AdalineGD:
     n_iter : int
         Passes over the training dataset.
     random_state : int
-        Random number generator seed for random weight initialization.
+        Random number generator seed for random weight initialization .
     
     Attributes
     -----------
