@@ -67,26 +67,26 @@ class Perceptron:
     def predict(self, X):
         """Return class label after unit step"""
         return np.where(self.net_input(X) >= 0.0, 1, 0)
+if __name__ == "__main__":
+  # Load Iris dataset
+  iris = datasets.load_iris()
+  X = iris.data[:100, :]
+  y = iris.target[:100]
 
-# Load Iris dataset
-iris = datasets.load_iris()
-X = iris.data[:100, :]
-y = iris.target[:100]
+  # Convert labels to (-1,1)
+  y = np.where(y == 0, -1, 1)
 
-# Convert labels to (-1,1)
-y = np.where(y == 0, -1, 1)
+  # Define parameters
+  eta = 0.01
+  n_iter = 50
 
-# Define parameters
-eta = 0.01
-n_iter = 50
+  # Train Perceptron
+  perceptron = Perceptron(eta=eta, n_iter=n_iter)
+  perceptron.fit(X, y)
 
-# Train Perceptron
-perceptron = Perceptron(eta=eta, n_iter=n_iter)
-perceptron.fit(X, y)
-
-# Plot Perceptron Errors
-plt.plot(range(1, len(perceptron.errors_) + 1), perceptron.errors_, marker='o')
-plt.xlabel('Epochs')
-plt.ylabel('Number of Updates')
-plt.title('Perceptron Convergence Over Epochs')
-plt.show()
+  # Plot Perceptron Errors
+  plt.plot(range(1, len(perceptron.errors_) + 1), perceptron.errors_, marker='o')
+  plt.xlabel('Epochs')
+  plt.ylabel('Number of Updates')
+  plt.title('Perceptron Convergence Over Epochs')
+  plt.show()

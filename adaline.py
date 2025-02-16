@@ -70,26 +70,26 @@ class AdalineGD:
     def predict(self, X):
         """Return class label after unit step"""
         return np.where(self.activation(self.net_input(X)) >= 0.5, 1, 0)
+if __name__ == "__main__":
+  # Load Iris dataset
+  iris = datasets.load_iris()
+  X = iris.data[:100, :]
+  y = iris.target[:100]
 
-# Load Iris dataset
-iris = datasets.load_iris()
-X = iris.data[:100, :]
-y = iris.target[:100]
+  # Convert labels to (-1,1)
+  y = np.where(y == 0, -1, 1)
 
-# Convert labels to (-1,1)
-y = np.where(y == 0, -1, 1)
+  # Define parameters
+  eta = 0.01
+  n_iter = 50
 
-# Define parameters
-eta = 0.01
-n_iter = 50
+  # Train Adaline
+  adaline = AdalineGD(eta=eta, n_iter=n_iter)
+  adaline.fit(X, y)
 
-# Train Adaline
-adaline = AdalineGD(eta=eta, n_iter=n_iter)
-adaline.fit(X, y)
-
-# Plot Adaline Loss
-plt.plot(range(1, len(adaline.losses_) + 1), adaline.losses_, marker='o')
-plt.xlabel('Epochs')
-plt.ylabel('Mean Squared Error')
-plt.title('Adaline Loss Over Epochs')
-plt.show()
+  # Plot Adaline Loss
+  plt.plot(range(1, len(adaline.losses_) + 1), adaline.losses_, marker='o')
+  plt.xlabel('Epochs')
+  plt.ylabel('Mean Squared Error')
+  plt.title('Adaline Loss Over Epochs')
+  plt.show()
