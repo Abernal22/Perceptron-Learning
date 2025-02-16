@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn import datasets
+import matplotlib.pyplot as plt
 
 class AdalineGD:
     """ADAptive LInear NEuron classifier.
@@ -10,7 +12,7 @@ class AdalineGD:
     n_iter : int
         Passes over the training dataset.
     random_state : int
-        Random number generator seed for random weight initialization .
+        Random number generator seed for random weight initialization.
     
     Attributes
     -----------
@@ -43,7 +45,7 @@ class AdalineGD:
         """
         rgen = np.random.RandomState(self.random_state)
         self.w_ = rgen.normal(loc=0.0, scale=0.01, size=X.shape[1])
-        self.b_ = np.float_(0.)
+        self.b_ = np.float64(0.)
         self.losses_ = []
         
         for i in range(self.n_iter):
@@ -68,3 +70,26 @@ class AdalineGD:
     def predict(self, X):
         """Return class label after unit step"""
         return np.where(self.activation(self.net_input(X)) >= 0.5, 1, 0)
+
+# Load Iris dataset
+iris = datasets.load_iris()
+X = iris.data[:100, :]
+y = iris.target[:100]
+
+# Convert labels to (-1,1)
+y = np.where(y == 0, -1, 1)
+
+# Define parameters
+eta = 0.01
+n_iter = 50
+
+# Train Adaline
+adaline = AdalineGD(eta=eta, n_iter=n_iter)
+adaline.fit(X, y)
+
+# Plot Adaline Loss
+plt.plot(range(1, len(adaline.losses_) + 1), adaline.losses_, marker='o')
+plt.xlabel('Epochs')
+plt.ylabel('Mean Squared Error')
+plt.title('Adaline Loss Over Epochs')
+plt.show()
