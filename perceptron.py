@@ -45,16 +45,15 @@ class Perceptron:
         self : object
         """
         rgen = np.random.RandomState(self.random_state)
-        self.w_ = rgen.normal(loc=0.0, scale=0.01, size=X.shape[1])
-        self.b_ = np.float64(0.)
+        self.w_ = rgen.normal(loc=0.0, scale=0.01, size=X.shape[1]+1)
+        self.w_[:-1] = np.float64(0.)
         self.errors_ = []
         
         for _ in range(self.n_iter):
             errors = 0
             for xi, target in zip(X, y):
                 update = self.eta * (target - self.predict(xi))
-                self.w_ += update * xi
-                self.b_ += update
+                self.w_ += update * np.append(xi, 1)
                 errors += int(update != 0.0)
             self.errors_.append(errors)
         
@@ -62,7 +61,7 @@ class Perceptron:
 
     def net_input(self, X):
         """Calculate net input"""
-        return np.dot(X, self.w_) + self.b_
+        return np.dot(np.append(X,1), self.w_)
 
     def predict(self, X):
         """Return class label after unit step"""
@@ -74,10 +73,10 @@ if __name__ == "__main__":
   y = iris.target[:100]
 
   # Convert labels to (-1,1)
-  y = np.where(y == 0, -1, 1)
+  #y = np.where(y == 0, -1, 1)
 
   # Define parameters
-  eta = 0.01
+  eta = 0.1
   n_iter = 50
 
   # Train Perceptron
