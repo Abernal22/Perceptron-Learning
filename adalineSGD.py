@@ -200,18 +200,30 @@ if __name__ == "__main__":
     adaline.fit(X, y)
 
     # Plot Adaline Loss
+    plt.figure()
     plt.plot(range(1, len(adaline.losses_) + 1), adaline.losses_, marker='o')
     plt.xlabel('Epochs')
     plt.ylabel('Mean Squared Error')
     plt.title('AdalineSGD Loss Over Epochs')
-    plt.show()
+
 
     adaline2 = AdalineSGD(eta=eta, n_iter=n_iter, random_state=1)
     adaline2.fit_mini_batch_SGD(X, y, 3)
 
     # Plot Adaline Loss
+    plt.figure()
     plt.plot(range(1, len(adaline2.losses_) + 1), adaline2.losses_, marker='o')
     plt.xlabel('Epochs')
     plt.ylabel('Mean Squared Error')
     plt.title('Adaline_mini_batch_SGD Loss Over Epochs')
-    plt.show()          
+
+    adaline2 = AdalineSGD(eta=eta, n_iter=n_iter, random_state=1)
+    adaline2.fit_mini_batch_SGD(X, y, X.shape[0])
+
+    # Plot Adaline Loss
+    plt.figure()
+    plt.plot(range(1, len(adaline2.losses_) + 1), adaline2.losses_, marker='o')
+    plt.xlabel('Epochs')
+    plt.ylabel('Mean Squared Error')
+    plt.title('AdalineGD Loss Over Epochs')
+    plt.show()                  
