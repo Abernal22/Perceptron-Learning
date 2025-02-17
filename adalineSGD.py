@@ -80,8 +80,83 @@ class AdalineSGD:
             for xi, target in zip(X, y):
                 losses.append(self._update_weights(xi, target))
             avg_loss = np.mean(losses) 
-            self.losses_.append(avg_loss)
+            self.losses_.append(avg_loss)    
         return self
+    
+
+    def batchRun(self, X, y):
+        """Fit one batch
+        
+        Parameters
+        ----------
+        X : {array-like}, shape = [n_examples, n_features]
+            Training vectors, where n_examples is the number of examples and n_features is the number of features.
+        y : array-like, shape = [n_examples]
+            Target values.
+        
+        Returns
+        -------
+        self : object
+        """
+        #Does not reset weights. Meant to be used with mini batch SGD
+        
+        net_input = self.net_input(X)
+        output = self.activation(net_input)
+        errors = (y - output)
+        self.w_ += self.eta * 2.0 * X.T.dot(errors) / X.shape[0]
+        self.b_ += self.eta * 2.0 * errors.mean()
+        loss = (errors**2).mean()
+        
+        #return loss in batch
+        return loss
+    
+    def makeBatches(self, X, y, batch_size):
+        #divide data into batches
+        rows = X.shape[0]
+        indices = np.random.choice(rows, rows, replace=False) 
+        batches = []
+        for i in range(0, rows, batch_size):
+            start = i
+            end = min(i+batch_size, rows)
+            index = indices[start:end]
+            batches.append((X[index], y[index]))
+        return batches
+    
+
+
+    def fit_mini_batch_SGD(self, X, y, batch_size=1):
+        #takes samples with features X = [n_samples, n_features]
+        #batch size is one unless user specified.
+        #chooses samples at random.
+        self._initialize_weights(X.shape[1])
+
+        #check for a valid batch size
+        bSize = batch_size
+        rows = X.shape[0]
+        if batch_size > rows:
+            bSize = rows
+        if batch_size < 1:
+            bSize = 1
+
+        self.losses_ = []
+        for x in range(self.n_iter):
+            #shuffle for each epoch
+            if self.shuffle:
+                X, y = self._shuffle(X, y) 
+            batches = self.makeBatches(X, y, bSize)
+            bloss = []      
+            for batch in batches:
+                bloss.append(self.batchRun(batch[0], batch[1]))
+            self.losses_.append(np.mean(bloss))    
+         
+
+        return self                   
+
+
+
+
+
+
 
     def partial_fit(self, X, y):
         """Fit training data without reinitializing the weights"""
@@ -129,4 +204,14 @@ if __name__ == "__main__":
     plt.xlabel('Epochs')
     plt.ylabel('Mean Squared Error')
     plt.title('AdalineSGD Loss Over Epochs')
-    plt.show()    
+    plt.show()
+
+    adaline2 = AdalineSGD(eta=eta, n_iter=n_iter, random_state=1)
+    adaline2.fit_mini_batch_SGD(X, y, 3)
+
+    # Plot Adaline Loss
+    plt.plot(range(1, len(adaline2.losses_) + 1), adaline2.losses_, marker='o')
+    plt.xlabel('Epochs')
+    plt.ylabel('Mean Squared Error')
+    plt.title('Adaline_mini_batch_SGD Loss Over Epochs')
+    plt.show()          
