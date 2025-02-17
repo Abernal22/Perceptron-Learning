@@ -1,5 +1,8 @@
 import numpy as np
 from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 
 class Perceptron:
@@ -66,11 +69,49 @@ class Perceptron:
     def predict(self, X):
         """Return class label after unit step"""
         return np.where(self.net_input(X) >= 0.0, 1, 0)
+
+
+# Load the full Iris dataset
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
+
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Train test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size =0.2, random_state=42)
+
+#Train three perceptrons
+perceptrons = {}
+classes = np.unique(y)
+
+for c in classes:
+    y_binary = np.where(y_train == c, 1, 0)
+    perceptrons[c] = Perceptron(eta= 0.01, n_iter=100)
+    perceptrons[c].fit(X_train, y_binary)
+
+#Multiclass Prediction using OvA
+def predict_multiclass(X):
+    scores = {c: perceptrons[c].net_input(X) for c in classes}
+    return max(scores, key=scores.get)
+
+y_pred = np.array([predict_multiclass(xi) for xi in X_test])
+
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Multiclass Perceptron Accuracy: {accuracy:.2f}")
+
+plt.plot(range(1, len(perceptrons[classes[0]].errors_) + 1 ), perceptrons [classes[0]].errors_, marker= 'o')
+plt.xlabel('Epochs')
+plt.ylabel('Number of Updates')
+plt.title('Perceptron Convergence Over Epochs for Class 0')
+plt.show()
+
+
 if __name__ == "__main__":
   # Load Iris dataset
-  iris = datasets.load_iris()
-  X = iris.data[:100, :]
-  y = iris.target[:100]
+  X_binary = iris.data[:100, :]
+  y_binary = iris.target[:100]
 
   # Convert labels to (-1,1)
   #y = np.where(y == 0, -1, 1)
@@ -81,7 +122,7 @@ if __name__ == "__main__":
 
   # Train Perceptron
   perceptron = Perceptron(eta=eta, n_iter=n_iter)
-  perceptron.fit(X, y)
+  perceptron.fit(X_binary, y_binary)
 
   # Plot Perceptron Errors
   plt.plot(range(1, len(perceptron.errors_) + 1), perceptron.errors_, marker='o')
