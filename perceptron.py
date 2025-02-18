@@ -88,7 +88,7 @@ classes = np.unique(y)
 
 for c in classes:
     y_binary = np.where(y_train == c, 1, 0)
-    perceptrons[c] = Perceptron(eta= 0.01, n_iter=100)
+    perceptrons[c] = Perceptron(eta= 0.01, n_iter=50)
     perceptrons[c].fit(X_train, y_binary)
 
 #Multiclass Prediction using OvA
@@ -102,11 +102,11 @@ accuracy = accuracy_score(y_test, y_pred)
 print(f"Multiclass Perceptron Accuracy: {accuracy:.2f}")
 
 # Plot Perceptron Errors for all Classes
-plt. figure(figsize=(8, 6))
+plt.figure(figsize=(8, 6))
 for c in classes:
     plt.plot(range(1, len(perceptrons[c].errors_) + 1), perceptrons[c].errors_, marker='o', label=f'Class {c}')
 
-plt.plot(range(1, len(perceptrons[classes[0]].errors_) + 1 ), perceptrons [classes[0]].errors_, marker= 'o')
+#plt.plot(range(1, len(perceptrons[classes[0]].errors_) + 1 ), perceptrons[classes[0]].errors_, marker= 'o')
 plt.xlabel('Epochs')
 plt.ylabel('Number of Updates')
 plt.title('Perceptron Convergence for all Classes')
