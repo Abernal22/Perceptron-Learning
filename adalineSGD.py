@@ -114,7 +114,7 @@ class AdalineSGD:
     def makeBatches(self, X, y, batch_size):
         #divide data into batches
         rows = X.shape[0]
-        indices = np.random.choice(rows, rows, replace=False) 
+        indices = self.rgen.choice(rows, rows, replace=False) 
         batches = []
         for i in range(0, rows, batch_size):
             start = i
